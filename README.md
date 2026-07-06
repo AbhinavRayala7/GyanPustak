@@ -6,7 +6,7 @@ Built using **Python (Flask)** for the backend, **HTML5/CSS3/Vanilla JS** for th
 
 ---
 
-## 🌟 Key Modules & Features
+##  Key Modules & Features
 
 1.  **Multi-Role Access Control:**
     *   **Student:** Register and search the catalog, request borrows/reserves, add textbooks to a cart, order books from peers, and log customer support tickets.
@@ -30,7 +30,7 @@ Built using **Python (Flask)** for the backend, **HTML5/CSS3/Vanilla JS** for th
 
 ---
 
-## 📁 Repository Structure
+##  Repository Structure
 
 ```bash
 D:\GyanPustak/
@@ -85,27 +85,4 @@ Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your web browser.
 ---
 
 ## 🔑 Test Credentials (Seeded Users)
-
-All seeded test accounts use the password: **`password123`**
-
-| Role | Username | Email | Description |
-| :--- | :--- | :--- | :--- |
-| **Super Admin** | `superadmin` | `superadmin@gyanpustak.in` | Global system control |
-| **Admin** | `admin_prasanth` | `prasanth@gyanpustak.in` | Catalog & request approval |
-| **Student** | `student_abhinav` | `abhinav@gyanpustak.in` | Catalog browsing & purchases |
-| **Student** | `student_rahul` | `rahul@gyanpustak.in` | Secondary student account |
-
----
-
-## 💡 Git Commit Suggestions
-
-Use these clean, descriptive commit messages to push this project to your GitHub:
-*   `feat: initialize project structure and Flask entry point`
-*   `feat: add SQLite auto-fallback database connection manager`
-*   `feat: build core authentication and registration blueprints`
-*   `feat: implement role-based dashboards and Chart.js endpoints`
-*   `feat: implement library borrow and reservation workflow`
-*   `feat: build bookstore shopping cart and checkout module`
-*   `feat: add support tickets conversation thread system`
-*   `feat: create spreadsheet reports exporter using openpyxl`
-*   `docs: create comprehensive README instructions`
+you can find the login credentials in the seed.db files

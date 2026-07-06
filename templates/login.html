@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Log In - Gyan Pustak{% endblock %}
+
+{% block auth_content %}
+<div class="auth-card">
+    <div style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 2.5rem;">
+        <i class="fas fa-book-reader"></i>
+    </div>
+    <h2>Gyan Pustak</h2>
+    <p>Sign in to access library & bookstore catalog</p>
+    
+    <form action="{{ url_for('auth.login') }}" method="POST">
+        <div class="form-group">
+            <label for="username">Username or Email</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="Enter username or email" required autofocus>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
+        </div>
+        <div class="form-group">
+            <label for="role">Login As</label>
+            <select id="role" name="role" class="form-control" required>
+                <option value="Student">Student / User</option>
+                <option value="Admin">Librarian Admin</option>
+                <option value="SuperAdmin">Super Admin</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Log In</span>
+        </button>
+    </form>
+    
+    <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
+        <span>Don't have an account? </span>
+        <a href="{{ url_for('auth.register') }}">Register here</a>
+    </div>
+</div>
+{% endblock %}

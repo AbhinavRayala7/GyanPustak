@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Gyan Pustak{% endblock %}
+
+{% block auth_content %}
+<div class="auth-card" style="max-width: 500px; padding: 2rem;">
+    <div style="text-align: center; margin-bottom: 1rem; color: var(--primary); font-size: 2rem;">
+        <i class="fas fa-book-reader"></i>
+    </div>
+    <h2 style="font-size: 1.5rem; margin-bottom: 0.25rem;">Create Account</h2>
+    <p style="margin-bottom: 1.5rem; font-size: 0.85rem;">Register as a student in the textbook system</p>
+    
+    <form action="{{ url_for('auth.register') }}" method="POST">
+        <div class="form-group" style="margin-bottom: 0.75rem;">
+            <label for="username" style="margin-bottom: 0.25rem;">Username</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="Choose a username" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 0.75rem;">
+            <label for="email" style="margin-bottom: 0.25rem;">Email Address</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="Enter student email" required>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="phone" style="margin-bottom: 0.25rem;">Phone Number</label>
+                <input type="text" id="phone" name="phone" class="form-control" placeholder="Mobile number">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="college" style="margin-bottom: 0.25rem;">College Campus</label>
+                <select id="college" name="college" class="form-control" required>
+                    <option value="IIT Bhubaneswar">IIT Bhubaneswar</option>
+                    <option value="IIT Hyderabad">IIT Hyderabad</option>
+                    <option value="IIT Kharagpur">IIT Kharagpur</option>
+                    <option value="IIT Madras">IIT Madras</option>
+                </select>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="password" style="margin-bottom: 0.25rem;">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="confirm_password" style="margin-bottom: 0.25rem;">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirm password" required>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.6rem;">
+            <i class="fas fa-user-plus"></i>
+            <span>Register Account</span>
+        </button>
+    </form>
+    
+    <div style="text-align: center; margin-top: 1.25rem; font-size: 0.85rem;">
+        <span>Already have an account? </span>
+        <a href="{{ url_for('auth.login') }}">Log in here</a>
+    </div>
+</div>
+{% endblock %}

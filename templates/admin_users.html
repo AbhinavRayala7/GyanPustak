@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - Gyan Pustak{% endblock %}
+{% block page_header %}User Accounts manager{% endblock %}
+
+{% block content %}
+<div class="table-container" style="margin-top: 1rem;">
+    <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 1.1rem; font-weight: 600;">System Operator Accounts</h3>
+        <button class="btn btn-primary btn-sm" onclick="openAddUserModal()">
+            <i class="fas fa-plus"></i>
+            <span>Create New User</span>
+        </button>
+    </div>
+    
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email Address</th>
+                <th>Phone Number</th>
+                <th>Role</th>
+                <th>College / Campus</th>
+                <th>Status</th>
+                <th style="text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+                <tr>
+                    <td>
+                        <div style="font-weight: 600;">{{ u.Username }}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Joined: {{ u.DateJoined.split(' ')[0] }}</div>
+                    </td>
+                    <td>{{ u.Email }}</td>
+                    <td>{{ u.Phone or '-' }}</td>
+                    <td>
+                        <span class="badge {% if u.Role == 'SuperAdmin' %}rejected{% elif u.Role == 'Admin' %}info{% else %}returned{% endif %}">
+                            {{ u.Role }}
+                        </span>
+                    </td>
+                    <td>{{ u.CollegeName }}</td>
+                    <td>
+                        <span class="badge {% if u.UserStatus == 'Active' %}approved{% else %}rejected{% endif %}">
+                            {{ u.UserStatus }}
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        <!-- Super Admin Edit button -->
+                        <!-- If user is logged-in SuperAdmin themselves, restrict deactivation to prevent lockouts -->
+                        <button class="btn btn-secondary btn-sm" onclick="openEditUserModal({{ u|tojson }})">
+                            <i class="fas fa-user-edit"></i>
+                            <span>Edit Account</span>
+                        </button>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                        <i class="fas fa-users" style="font-size: 2.5rem; color: var(--text-light); margin-bottom: 1rem; display: block;"></i>
+                        <span>No user accounts registered.</span>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Add / Edit User Modal Overlay -->
+<div id="userModal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 500px;">
+        <h3 id="modalTitle" style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">
+            Create User Account
+        </h3>
+        
+        <form action="{{ url_for('admin.manage_users') }}" method="POST">
+            <!-- Hidden input for ID (only populated when editing) -->
+            <input type="hidden" id="user_id" name="user_id">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Email" required>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="phone">Phone Number</label>
+                    <input type="text" id="phone" name="phone" class="form-control" placeholder="Mobile">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="college">College Campus</label>
+                    <input type="text" id="college" name="college" class="form-control" placeholder="e.g. IIT Bhubaneswar" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password <span id="pwdLabel" style="font-size: 0.8rem; font-weight: normal; color: var(--text-secondary);">(Leave blank to keep existing password)</span></label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password">
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="role">User Role</label>
+                    <select id="role" name="role" class="form-control" required>
+                        <option value="Student">Student / User</option>
+                        <option value="Admin">Librarian Admin</option>
+                        <option value="SuperAdmin">Super System Administrator</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="status">Account Status</label>
+                    <select id="status" name="status" class="form-control" required>
+                        <option value="Active">Active</option>
+                        <option value="Suspended">Suspended</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('userModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save User</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openAddUserModal() {
+    document.getElementById('modalTitle').innerText = 'Create User Account';
+    document.getElementById('pwdLabel').style.display = 'none';
+    document.getElementById('password').setAttribute('required', 'required');
+    document.getElementById('user_id').value = '';
+    document.getElementById('username').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('college').value = '';
+    document.getElementById('password').value = '';
+    document.getElementById('role').value = 'Student';
+    document.getElementById('status').value = 'Active';
+    openModal('userModal');
+}
+
+function openEditUserModal(user) {
+    document.getElementById('modalTitle').innerText = 'Edit User: ' + user.Username;
+    document.getElementById('pwdLabel').style.display = 'inline';
+    document.getElementById('password').removeAttribute('required');
+    document.getElementById('user_id').value = user.UserID;
+    document.getElementById('username').value = user.Username;
+    document.getElementById('email').value = user.Email;
+    document.getElementById('phone').value = user.Phone || '';
+    document.getElementById('college').value = user.CollegeName;
+    document.getElementById('password').value = '';
+    document.getElementById('role').value = user.Role;
+    document.getElementById('status').value = user.UserStatus;
+    openModal('userModal');
+}
+</script>
+{% endblock %}

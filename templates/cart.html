@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart - Gyan Pustak{% endblock %}
+{% block page_header %}Shopping Cart{% endblock %}
+
+{% block content %}
+<div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 1rem;">
+    <!-- Cart Items Grid -->
+    <div style="flex-grow: 2; min-width: 350px; display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="table-container" style="margin-bottom: 0;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Price</th>
+                        <th style="text-align: center;">Quantity</th>
+                        <th>Subtotal</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600;">{{ item.title }}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">by {{ item.author }} - {{ item.condition }}</div>
+                            </td>
+                            <td>₹{{ "%.2f"|format(item.price) }}</td>
+                            <td style="text-align: center;">
+                                <div style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                                    <form action="{{ url_for('store.update_cart') }}" method="POST">
+                                        <input type="hidden" name="listing_id" value="{{ item.listing_id }}">
+                                        <input type="hidden" name="action" value="decrease">
+                                        <button type="submit" class="btn btn-secondary btn-sm" style="padding: 0.2rem 0.5rem;">-</button>
+                                    </form>
+                                    <span style="font-weight: 600; font-size: 0.95rem;">{{ item.quantity }}</span>
+                                    <form action="{{ url_for('store.update_cart') }}" method="POST">
+                                        <input type="hidden" name="listing_id" value="{{ item.listing_id }}">
+                                        <input type="hidden" name="action" value="increase">
+                                        <button type="submit" class="btn btn-secondary btn-sm" style="padding: 0.2rem 0.5rem;">+</button>
+                                    </form>
+                                </div>
+                            </td>
+                            <td>₹{{ "%.2f"|format(item.subtotal) }}</td>
+                            <td style="text-align: right;">
+                                <form action="{{ url_for('store.update_cart') }}" method="POST">
+                                    <input type="hidden" name="listing_id" value="{{ item.listing_id }}">
+                                    <input type="hidden" name="action" value="remove">
+                                    <button type="submit" class="btn btn-danger btn-sm" style="padding: 0.4rem;" title="Remove from cart">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                                <i class="fas fa-shopping-cart" style="font-size: 2.5rem; color: var(--text-light); margin-bottom: 1rem; display: block;"></i>
+                                <span>Your shopping cart is empty. <a href="{{ url_for('store.index') }}">Go back to Bookstore</a> to add items.</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <a href="{{ url_for('store.index') }}" class="btn btn-secondary" style="align-self: flex-start;">
+            <i class="fas fa-chevron-left"></i>
+            <span>Continue Shopping</span>
+        </a>
+    </div>
+    
+    <!-- Checkout Sidebar Summary Card -->
+    {% if cart_items %}
+        <div class="auth-card" style="flex-grow: 1; max-width: 400px; height: fit-content; padding: 2rem; margin: 0;">
+            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">
+                Order Summary
+            </h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem; font-size: 0.95rem;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-secondary);">Items count:</span>
+                    <span>{{ cart_items|length }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.15rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem; margin-top: 0.5rem;">
+                    <span>Grand Total:</span>
+                    <span style="color: var(--primary);">₹{{ "%.2f"|format(grand_total) }}</span>
+                </div>
+            </div>
+            
+            <form action="{{ url_for('store.checkout') }}" method="POST">
+                <div class="form-group">
+                    <label for="shipping_address">Delivery/Campus Handoff Address</label>
+                    <textarea id="shipping_address" name="shipping_address" class="form-control" rows="3" placeholder="Enter your Hostel / Room Number / Lab Location for handoff..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Place Order (Cash on Handoff)</span>
+                </button>
+            </form>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

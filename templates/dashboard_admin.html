@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Gyan Pustak{% endblock %}
+{% block page_header %}Librarian Dashboard{% endblock %}
+
+{% block content %}
+<!-- Quick Stat Summary Cards -->
+<div class="dashboard-grid">
+    <div class="stat-card">
+        <div class="icon-box"><i class="fas fa-book"></i></div>
+        <div class="info">
+            <span class="num">{{ total_books }}</span>
+            <span class="title">Total Books</span>
+        </div>
+    </div>
+    
+    <div class="stat-card success">
+        <div class="icon-box"><i class="fas fa-sign-out-alt"></i></div>
+        <div class="info">
+            <span class="num">{{ issued_books }}</span>
+            <span class="title">Issued Books</span>
+        </div>
+    </div>
+    
+    <div class="stat-card warning">
+        <div class="icon-box"><i class="fas fa-hourglass-half"></i></div>
+        <div class="info">
+            <span class="num">{{ pending_borrows }}</span>
+            <span class="title">Pending Borrows</span>
+        </div>
+    </div>
+    
+    <div class="stat-card danger">
+        <div class="icon-box"><i class="fas fa-headset"></i></div>
+        <div class="info">
+            <span class="num">{{ open_tickets }}</span>
+            <span class="title">Open Tickets</span>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="charts-grid">
+    <div class="chart-card">
+        <h3>Books by Category</h3>
+        <div style="position: relative; height:220px; display:flex; justify-content:center;">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="chart-card">
+        <h3>Borrowing Trends</h3>
+        <div style="position: relative; height:220px; display:flex; justify-content:center;">
+            <canvas id="trendsChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Admin Task Navigation Panel -->
+<div class="table-container" style="padding: 1.5rem;">
+    <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Librarian Actions Quick Links</h3>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="{{ url_for('admin.manage_books') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            <span>Add / Edit Catalog</span>
+        </a>
+        <a href="{{ url_for('admin.manage_requests') }}" class="btn btn-secondary">
+            <i class="fas fa-check-circle"></i>
+            <span>Approve Borrows & Orders ({{ pending_borrows + pending_orders }})</span>
+        </a>
+        <a href="{{ url_for('tickets.index') }}" class="btn btn-secondary">
+            <i class="fas fa-comments"></i>
+            <span>Respond to Support Tickets ({{ open_tickets }})</span>
+        </a>
+        <a href="{{ url_for('reports.index') }}" class="btn btn-secondary">
+            <i class="fas fa-file-excel"></i>
+            <span>System Excel Reports</span>
+        </a>
+    </div>
+</div>
+{% endblock %}

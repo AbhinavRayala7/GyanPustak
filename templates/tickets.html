@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Support Tickets - Gyan Pustak{% endblock %}
+{% block page_header %}Customer Support{% endblock %}
+
+{% block content %}
+{% if detail_view %}
+    <!-- 1. TICKET DETAIL / CONVERSATION THREAD VIEW -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <a href="{{ url_for('tickets.index') }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-chevron-left"></i>
+            <span>Back to Support Tickets</span>
+        </a>
+        
+        <div>
+            {% if ticket.Status != 'Resolved' %}
+                <form action="{{ url_for('tickets.close_ticket', ticket_id=ticket.TicketID) }}" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Confirm closing this ticket as Resolved?')">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Close & Resolve Ticket</span>
+                    </button>
+                </form>
+            {% else %}
+                <span class="badge resolved">Ticket Resolved</span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Ticket Header Detail Card -->
+    <div class="table-container" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.5rem;">
+            <h2 style="font-size: 1.35rem; font-weight: 700;">#{{ ticket.TicketID }} - {{ ticket.Subject }}</h2>
+            <span class="badge {% if ticket.Status == 'Open' %}pending{% elif ticket.Status == 'In Progress' %}info{% else %}resolved{% endif %}">
+                {{ ticket.Status }}
+            </span>
+        </div>
+        <div style="font-size: 0.85rem; color: var(--text-secondary); display: flex; gap: 1.5rem; flex-wrap: wrap;">
+            <span><strong>Category:</strong> {{ ticket.Category }}</span>
+            <span><strong>Raised By:</strong> {{ owner.Username }} ({{ owner.CollegeName }})</span>
+            <span><strong>Created:</strong> {{ ticket.DateCreated.split(' ')[0] }}</span>
+        </div>
+    </div>
+    
+    <!-- Conversation Messages Thread -->
+    <div class="chat-container">
+        {% for msg in messages %}
+            <!-- Message bubble styling: sender role determines alignment -->
+            <div class="chat-bubble {% if msg.SenderRole == 'Student' %}student{% else %}admin{% endif %}">
+                <div class="meta">
+                    <strong>{{ msg.Username }}</strong> ({{ msg.SenderRole }}) &bull; {{ msg.DateSent.split(' ')[1] }}
+                </div>
+                <div style="font-size: 0.95rem; white-space: pre-line;">{{ msg.MessageText }}</div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Reply Form -->
+    {% if ticket.Status != 'Resolved' %}
+        <div class="table-container" style="padding: 1.5rem;">
+            <form action="{{ url_for('tickets.detail', ticket_id=ticket.TicketID) }}" method="POST">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="message_text" style="font-weight: 600;">Type your reply</label>
+                    <textarea id="message_text" name="message_text" class="form-control" rows="3" placeholder="Explain details or respond to support comments..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Send Message</span>
+                </button>
+            </form>
+        </div>
+    {% endif %}
+
+{% else %}
+    <!-- 2. TICKET LISTING & CREATION GRID -->
+    <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 1rem;">
+        
+        <!-- Tickets List -->
+        <div style="flex-grow: 2; min-width: 350px;">
+            <div class="table-container" style="margin-bottom: 0;">
+                <div style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                    <h3 style="font-size: 1.1rem; font-weight: 600;">Your Support Tickets</h3>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Subject</th>
+                            <th>Category</th>
+                            <th>Last Updated</th>
+                            <th>Status</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ticket in tickets %}
+                            <tr>
+                                <td>#{{ ticket.TicketID }}</td>
+                                <td>
+                                    <div style="font-weight: 600;">{{ ticket.Subject }}</div>
+                                </td>
+                                <td>{{ ticket.Category }}</td>
+                                <td>{{ ticket.DateUpdated.split(' ')[0] }}</td>
+                                <td>
+                                    <span class="badge {% if ticket.Status == 'Open' %}pending{% elif ticket.Status == 'In Progress' %}info{% else %}resolved{% endif %}">
+                                        {{ ticket.Status }}
+                                    </span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <a href="{{ url_for('tickets.detail', ticket_id=ticket.TicketID) }}" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-comments"></i>
+                                        <span>View Thread</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                                    <i class="fas fa-headset" style="font-size: 2.5rem; color: var(--text-light); margin-bottom: 1rem; display: block;"></i>
+                                    <span>No support tickets logged.</span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Raise Ticket Side Card (Students only) -->
+        {% if session.get('role') == 'Student' %}
+            <div class="auth-card" style="flex-grow: 1; max-width: 400px; height: fit-content; padding: 2rem; margin: 0;">
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">
+                    Raise a New Ticket
+                </h3>
+                
+                <form action="{{ url_for('tickets.index') }}" method="POST">
+                    <div class="form-group">
+                        <label for="subject">Subject Summary</label>
+                        <input type="text" id="subject" name="subject" class="form-control" placeholder="Brief summary of issue" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" name="category" class="form-control" required>
+                            <option value="Library">Library System</option>
+                            <option value="Store">Bookstore Ordering</option>
+                            <option value="Account">User Account / Password</option>
+                            <option value="Technical">Technical Glitch</option>
+                            <option value="Other">Other / General Feedback</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Detailed Description</label>
+                        <textarea id="description" name="description" class="form-control" rows="4" placeholder="Explain the issue in detail..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">
+                        <i class="fas fa-plus"></i>
+                        <span>Submit Support Ticket</span>
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+        
+    </div>
+{% endif %}
+{% endblock %}

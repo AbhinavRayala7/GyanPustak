@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Bookstore - Gyan Pustak{% endblock %}
+{% block page_header %}Campus Bookstore{% endblock %}
+
+{% block content %}
+<!-- Bookstore Sub-Header Panel -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background-color: var(--bg-secondary); border: 1px solid var(--border-color); padding: 1rem 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-sm);">
+    <div style="display: flex; flex-direction: column;">
+        <span style="font-weight: 600; font-size: 1.1rem;">Buy Textbooks Directly from Peers</span>
+        <span style="font-size: 0.85rem; color: var(--text-secondary);">Browse copies listed by students on campus</span>
+    </div>
+    
+    <div style="display: flex; gap: 1rem;">
+        <a href="{{ url_for('store.orders') }}" class="btn btn-secondary">
+            <i class="fas fa-history"></i>
+            <span>Order History</span>
+        </a>
+        <a href="{{ url_for('store.view_cart') }}" class="btn btn-primary">
+            <i class="fas fa-shopping-cart"></i>
+            <span>View Cart ({{ session.get('cart', {})|length }})</span>
+        </a>
+    </div>
+</div>
+
+<!-- Products Listings Grid -->
+<div class="product-grid">
+    {% for item in listings %}
+        <div class="product-card" style="justify-content: space-between;">
+            <div>
+                <!-- Category and Condition Tags -->
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <span class="badge returned">{{ item.CategoryName }}</span>
+                    <span class="badge active" style="background-color: rgba(14, 165, 233, 0.15); color: var(--accent);">
+                        {{ item.Condition }}
+                    </span>
+                </div>
+                
+                <h3 style="font-size: 1.15rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--text-primary);">
+                    {{ item.Title }}
+                </h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                    by {{ item.Author }}
+                </p>
+                
+                {% if item.ListingDescription %}
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem; border-left: 2px solid var(--border-color); padding-left: 0.5rem; font-style: italic;">
+                        "{{ item.ListingDescription }}"
+                    </p>
+                {% endif %}
+                
+                <div style="font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.25rem; color: var(--text-secondary); border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                    <span><strong>Edition:</strong> {{ item.Edition or 'N/A' }}</span>
+                    <span><strong>Publisher:</strong> {{ item.Publisher or 'N/A' }}</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="price-tag">₹{{ "%.2f"|format(item.Price) }}</span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Stock: {{ item.Stock }}</span>
+                </div>
+                
+                <form action="{{ url_for('store.add_to_cart', listing_id=item.ListingID) }}" method="POST" style="width: 100%;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                        <i class="fas fa-cart-plus"></i>
+                        <span>Add to Cart</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div class="table-container" style="grid-column: 1 / -1; padding: 3rem; text-align: center; color: var(--text-secondary);">
+            <i class="fas fa-shopping-bag" style="font-size: 2.5rem; color: var(--text-light); margin-bottom: 1rem; display: block;"></i>
+            <span>No books are currently listed for sale in the bookstore. Check back later!</span>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

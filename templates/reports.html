@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}System Reports - Gyan Pustak{% endblock %}
+{% block page_header %}Analytics & Reports Center{% endblock %}
+
+{% block content %}
+<!-- Export Options Panel (Hidden during Printing) -->
+<div class="table-container" style="padding: 1.25rem; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; flex-direction: column;">
+            <span style="font-weight: 600; font-size: 1.1rem;">Export & Download Hub</span>
+            <span style="font-size: 0.85rem; color: var(--text-secondary);">Download structured system data or print official dashboard metrics</span>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <!-- Print to PDF -->
+            <button onclick="window.print()" class="btn btn-secondary">
+                <i class="fas fa-file-pdf"></i>
+                <span>Print PDF Report</span>
+            </button>
+            <!-- Excel download -->
+            <a href="{{ url_for('reports.export_excel') }}" class="btn btn-primary">
+                <i class="fas fa-file-excel"></i>
+                <span>Export Excel Spreadsheet</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Printable Header Logo (Visible ONLY during print layout) -->
+<div class="print-only-header" style="display: none; text-align: center; margin-bottom: 2rem;">
+    <h1 style="font-size: 2rem; font-weight: 700; color: #005086;">Gyan Pustak Marketplace & Library</h1>
+    <p style="font-size: 0.95rem; color: #666;">Generated System Status and Performance Report</p>
+    <div style="border-bottom: 2px solid #005086; margin-top: 1rem;"></div>
+</div>
+
+<!-- Spaced Out Summary Grids (Perfect for Printout Sheets) -->
+<div class="dashboard-grid" style="margin-bottom: 2.5rem;">
+    <div class="stat-card">
+        <div class="icon-box"><i class="fas fa-book"></i></div>
+        <div class="info">
+            <span class="num">{{ total_books }}</span>
+            <span class="title">Total Unique Titles</span>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="icon-box"><i class="fas fa-sign-out-alt"></i></div>
+        <div class="info">
+            <span class="num">{{ borrowed_books }}</span>
+            <span class="title">Currently Borrowed</span>
+        </div>
+    </div>
+    
+    <div class="stat-card success">
+        <div class="icon-box"><i class="fas fa-undo"></i></div>
+        <div class="info">
+            <span class="num">{{ returned_books }}</span>
+            <span class="title">Total Returns Handled</span>
+        </div>
+    </div>
+    
+    <div class="stat-card success">
+        <div class="icon-box"><i class="fas fa-wallet"></i></div>
+        <div class="info">
+            <span class="num">₹{{ "%.2f"|format(total_revenue) }}</span>
+            <span class="title">Store Revenue</span>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <div class="stat-card info">
+        <div class="icon-box"><i class="fas fa-shopping-bag"></i></div>
+        <div class="info">
+            <span class="num">{{ completed_sales }}</span>
+            <span class="title">Sales Transactions</span>
+        </div>
+    </div>
+    
+    <div class="stat-card danger">
+        <div class="icon-box"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="info">
+            <span class="num">{{ open_tickets }}</span>
+            <span class="title">Active Support Tickets</span>
+        </div>
+    </div>
+    
+    <div class="stat-card success">
+        <div class="icon-box"><i class="fas fa-check-double"></i></div>
+        <div class="info">
+            <span class="num">{{ resolved_tickets }}</span>
+            <span class="title">Resolved Tickets</span>
+        </div>
+    </div>
+    
+    <div class="stat-card info">
+        <div class="icon-box"><i class="fas fa-users"></i></div>
+        <div class="info">
+            <span class="num">{{ active_users }}</span>
+            <span class="title">Active Student Accounts</span>
+        </div>
+    </div>
+</div>
+
+<style>
+/* CSS styles to toggle print-only element during browser native window.print() triggers */
+@media print {
+    .print-only-header {
+        display: block !important;
+    }
+}
+</style>
+{% endblock %}

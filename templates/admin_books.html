@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Library Books - Gyan Pustak{% endblock %}
+{% block page_header %}Library Books Management{% endblock %}
+
+{% block content %}
+<div class="table-container" style="margin-top: 1rem;">
+    <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 1.1rem; font-weight: 600;">Textbook Catalog Inventory</h3>
+        <button class="btn btn-primary btn-sm" onclick="openAddBookModal()">
+            <i class="fas fa-plus"></i>
+            <span>Add New Book</span>
+        </button>
+    </div>
+    
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ISBN</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Inventory Copies</th>
+                <th style="text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+                <tr>
+                    <td>{{ book.ISBN }}</td>
+                    <td>
+                        <div style="font-weight: 600;">{{ book.Title }}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Ed. {{ book.Edition or 'N/A' }} - {{ book.Publisher or 'N/A' }}</div>
+                    </td>
+                    <td>{{ book.Author }}</td>
+                    <td>{{ book.CategoryName }}</td>
+                    <td>
+                        <strong style="color: var(--primary);">{{ book.AvailableCopies }}</strong> / {{ book.TotalCopies }}
+                    </td>
+                    <td style="text-align: right;">
+                        <div style="display: inline-flex; gap: 0.5rem;">
+                            <!-- Edit Action Button (populates javascript object and opens modal) -->
+                            <button class="btn btn-secondary btn-sm" onclick="openEditBookModal({{ book|tojson }})">
+                                <i class="fas fa-edit"></i>
+                                <span>Edit</span>
+                            </button>
+                            <!-- Delete action form -->
+                            <form action="{{ url_for('admin.delete_book', book_id=book.BookID) }}" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" style="padding: 0.4rem;" onclick="return confirm('Are you sure you want to delete this book?')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                        <i class="fas fa-book" style="font-size: 2.5rem; color: var(--text-light); margin-bottom: 1rem; display: block;"></i>
+                        <span>No books in the library catalog. Add one now!</span>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Add / Edit Book Modal Overlay -->
+<div id="bookModal" class="modal-overlay">
+    <div class="modal-card">
+        <h3 id="modalTitle" style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">
+            Add New Book
+        </h3>
+        
+        <form action="{{ url_for('admin.manage_books') }}" method="POST">
+            <!-- Hidden input for ID (only populated when editing) -->
+            <input type="hidden" id="book_id" name="book_id">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="isbn">ISBN (13 digits)</label>
+                    <input type="text" id="isbn" name="isbn" class="form-control" placeholder="e.g. 9780262033848" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="category_id">Category</label>
+                    <select id="category_id" name="category_id" class="form-control" required>
+                        {% for cat in categories %}
+                            <option value="{{ cat.CategoryID }}">{{ cat.CategoryName }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="title">Book Title</label>
+                <input type="text" id="title" name="title" class="form-control" placeholder="Book Title" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="author">Author Name</label>
+                <input type="text" id="author" name="author" class="form-control" placeholder="Author" required>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="edition">Edition</label>
+                    <input type="text" id="edition" name="edition" class="form-control" placeholder="e.g. 3rd">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="publisher">Publisher</label>
+                    <input type="text" id="publisher" name="publisher" class="form-control" placeholder="Publisher">
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="publication_year">Publication Year</label>
+                    <input type="number" id="publication_year" name="publication_year" class="form-control" placeholder="e.g. 2011">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="total_copies">Total Inventory Copies</label>
+                    <input type="number" id="total_copies" name="total_copies" class="form-control" min="1" placeholder="Quantity" required>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('bookModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Book</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openAddBookModal() {
+    document.getElementById('modalTitle').innerText = 'Add New Book';
+    document.getElementById('book_id').value = '';
+    document.getElementById('isbn').value = '';
+    document.getElementById('title').value = '';
+    document.getElementById('author').value = '';
+    document.getElementById('edition').value = '';
+    document.getElementById('publisher').value = '';
+    document.getElementById('publication_year').value = '';
+    document.getElementById('total_copies').value = '1';
+    openModal('bookModal');
+}
+
+function openEditBookModal(book) {
+    document.getElementById('modalTitle').innerText = 'Edit Book: ' + book.Title;
+    document.getElementById('book_id').value = book.BookID;
+    document.getElementById('isbn').value = book.ISBN;
+    document.getElementById('title').value = book.Title;
+    document.getElementById('author').value = book.Author;
+    document.getElementById('edition').value = book.Edition || '';
+    document.getElementById('publisher').value = book.Publisher || '';
+    document.getElementById('publication_year').value = book.PublicationYear || '';
+    document.getElementById('total_copies').value = book.TotalCopies;
+    openModal('bookModal');
+}
+</script>
+{% endblock %}

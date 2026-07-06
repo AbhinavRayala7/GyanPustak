@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}User Profile - Gyan Pustak{% endblock %}
+{% block page_header %}My Profile Settings{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; margin-top: 1.5rem;">
+    <div class="auth-card" style="max-width: 600px; margin: 0; padding: 2rem;">
+        <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+            <div class="avatar" style="width: 70px; height: 70px; font-size: 2rem;">
+                {{ user.Username[0].upper() }}
+            </div>
+            <div style="display: flex; flex-direction: column;">
+                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem;">{{ user.Username }}</h2>
+                <span class="badge returned" style="align-self: flex-start;">{{ user.Role }} Account</span>
+            </div>
+        </div>
+        
+        <form action="{{ url_for('auth.profile') }}" method="POST">
+            <h3 style="font-size: 1.05rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">Contact Information</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" value="{{ user.Email }}" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="phone">Phone Number</label>
+                    <input type="text" id="phone" name="phone" class="form-control" value="{{ user.Phone or '' }}" placeholder="Enter mobile number">
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 2rem;">
+                <label for="college">College Affiliation</label>
+                <input type="text" id="college" name="college" class="form-control" value="{{ user.CollegeName }}" required>
+            </div>
+            
+            <h3 style="font-size: 1.05rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary); border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                Security & Password Reset
+            </h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">Leave password fields blank if you do not wish to change your password.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="current_password">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" class="form-control" placeholder="Verify old password">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="new_password">New Password</label>
+                    <input type="password" id="new_password" name="new_password" class="form-control" placeholder="Set new password">
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                <a href="{{ url_for('dashboard.index') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    <span>Save Profile Changes</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

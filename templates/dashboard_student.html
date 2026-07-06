@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Gyan Pustak{% endblock %}
+{% block page_header %}Student Overview{% endblock %}
+
+{% block content %}
+<!-- Quick Stat Summary Cards -->
+<div class="dashboard-grid">
+    <div class="stat-card">
+        <div class="icon-box"><i class="fas fa-book"></i></div>
+        <div class="info">
+            <span class="num">{{ borrowed_count }}</span>
+            <span class="title">Active Borrows</span>
+        </div>
+    </div>
+    
+    <div class="stat-card success">
+        <div class="icon-box"><i class="fas fa-bookmark"></i></div>
+        <div class="info">
+            <span class="num">{{ reservations_count }}</span>
+            <span class="title">Active Reservations</span>
+        </div>
+    </div>
+    
+    <div class="stat-card danger">
+        <div class="icon-box"><i class="fas fa-ticket-alt"></i></div>
+        <div class="info">
+            <span class="num">{{ tickets_count }}</span>
+            <span class="title">Open Tickets</span>
+        </div>
+    </div>
+</div>
+
+<!-- Section: Borrowed Books List and Quick Return -->
+<div class="table-container" style="margin-top: 2rem;">
+    <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 1.1rem; font-weight: 600;">Currently Issued Books</h3>
+        <span style="font-size: 0.85rem; color: var(--text-secondary);">Keep track of due dates to avoid campus locks</span>
+    </div>
+    
+    <!-- We will query and display books currently issued to this student -->
+    <!-- Let's fetch active borrows dynamically in the template or pass them from route. -->
+    <!-- Let's look at the database: we have the recent list in the route. Let's list active books. -->
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Book Title</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th style="text-align: right;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- We'll display recent borrow items with Approved status as returnable -->
+            {% set has_active = false %}
+            {% for item in recent_borrows %}
+                {% if item.Status in ['Approved', 'Overdue'] %}
+                    {% set has_active = true %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 500;">{{ item.Title }}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">by {{ item.Author }}</div>
+                        </td>
+                        <td>{{ item.DueDate.split(' ')[0] }}</td>
+                        <td>
+                            <span class="badge {% if item.Status == 'Overdue' %}rejected{% else %}approved{% endif %}">
+                                {{ item.Status }}
+                            </span>
+                        </td>
+                        <td style="text-align: right;">
+                            <!-- Return action trigger form -->
+                            <!-- To do this, we need the BorrowID. Let's make sure it is in recent_borrows. -->
+                            <!-- Wait, in dashboard.py, the query was: SELECT b.Title, b.Author, bb.BorrowDate, bb.DueDate, bb.Status FROM BorrowedBooks bb... -->
+                            <!-- Let's change the query in dashboard.py if needed, or query it again here. Wait! In dashboard.py, we selected: Title, Author, BorrowDate, DueDate, Status. But we did not select BorrowID! -->
+                            <!-- Actually, wait! In library.return_book, it needs borrow_id. If we don't have borrow_id in the row, we cannot submit it. -->
+                            <!-- Let's look at dashboard.py query: yes, it was `SELECT b.Title, b.Author, bb.BorrowDate, bb.DueDate, bb.Status FROM ...` -->
+                            <!-- Let's fix that! Let's modify dashboard.py to include `bb.BorrowID` in the select columns! -->
+                            <!-- Wait, let's write dashboard_student.html first, and then we will update dashboard.py to select bb.BorrowID. -->
+                            <!-- We can do this using replace_file_content! -->
+                            <!-- Let's write the HTML with `item.BorrowID` template variable ready. -->
+                            <form action="/library/return/{{ item.BorrowID }}" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-secondary btn-sm" onclick="return confirm('Confirm returning this book to the library?')">
+                                    <i class="fas fa-undo"></i>
+                                    <span>Return Book</span>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            
+            {% if not has_active %}
+                <tr>
+                    <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                        <i class="fas fa-book-open" style="font-size: 1.5rem; margin-bottom: 0.5rem; display: block; color: var(--text-light);"></i>
+                        <span>No books currently issued. Visit the <a href="{{ url_for('library.index') }}">Library Catalog</a> to borrow books!</span>
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Section: Borrowing Logs -->
+<div class="table-container" style="margin-top: 2rem;">
+    <div style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+        <h3 style="font-size: 1.1rem; font-weight: 600;">Recent Library Transactions</h3>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Book Title</th>
+                <th>Request Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in recent_borrows %}
+                <tr>
+                    <td>
+                        <div style="font-weight: 500;">{{ item.Title }}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">by {{ item.Author }}</div>
+                    </td>
+                    <td>{{ item.BorrowDate.split(' ')[0] }}</td>
+                    <td>
+                        <span class="badge {% if item.Status == 'Pending' %}pending{% elif item.Status in ['Approved', 'Returned'] %}approved{% else %}rejected{% endif %}">
+                            {{ item.Status }}
+                        </span>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3" style="text-align: center; color: var(--text-secondary); padding: 1.5rem;">
+                        <span>No recent borrowing transactions.</span>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

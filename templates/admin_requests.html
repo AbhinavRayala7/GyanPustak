@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Approval Requests - Gyan Pustak{% endblock %}
+{% block page_header %}Pending Approvals Console{% endblock %}
+
+{% block content %}
+<!-- Section: Borrow Requests -->
+<div class="table-container" style="margin-top: 1rem; margin-bottom: 2.5rem;">
+    <div style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+        <h3 style="font-size: 1.15rem; font-weight: 600;">Library Book Borrow Requests</h3>
+    </div>
+    
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Textbook Requested</th>
+                <th>Request Date</th>
+                <th>Library Stock</th>
+                <th style="text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in borrows %}
+                <tr>
+                    <td>
+                        <div style="font-weight: 600;">{{ req.Username }}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Campus: {{ req.CollegeName }}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600;">{{ req.Title }}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">by {{ req.Author }}</div>
+                    </td>
+                    <td>{{ req.BorrowDate.split(' ')[0] }}</td>
+                    <td>
+                        <strong style="color: {% if req.AvailableCopies > 0 %}var(--success){% else %}var(--danger){% endif %};">
+                            {{ req.AvailableCopies }} available
+                        </strong>
+                    </td>
+                    <td style="text-align: right;">
+                        <div style="display: inline-flex; gap: 0.5rem;">
+                            <!-- Approve Request -->
+                            {% if req.AvailableCopies > 0 %}
+                                <form action="{{ url_for('admin.process_borrow', borrow_id=req.BorrowID, action='approve') }}" method="POST">
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-check"></i>
+                                        <span>Approve</span>
+                                    </button>
+                                </form>
+                            {% else %}
+                                <button class="btn btn-secondary btn-sm" disabled title="No physical copies available in inventory">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Stock Out</span>
+                                </button>
+                            {% endif %}
+                            
+                            <!-- Reject Request -->
+                            <form action="{{ url_for('admin.process_borrow', borrow_id=req.BorrowID, action='reject') }}" method="POST">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Reject this borrow request?')">
+                                    <i class="fas fa-times"></i>
+                                    <span>Reject</span>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                        <i class="fas fa-check-double" style="font-size: 2.5rem; color: var(--text-light); margin-bottom: 1rem; display: block;"></i>
+                        <span>No pending library borrow requests.</span>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Section: Bookstore Orders -->
+<div class="table-container">
+    <div style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+        <h3 style="font-size: 1.15rem; font-weight: 600;">Bookstore Orders Approval</h3>
+    </div>
+    
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Student Buyer</th>
+                <th>Handoff Location</th>
+                <th>Order Amount</th>
+                <th>Order Date</th>
+                <th style="text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ord in orders %}
+                <tr>
+                    <td>#{{ ord.OrderID }}</td>
+                    <td>
+                        <div style="font-weight: 600;">{{ ord.Username }}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Campus: {{ ord.CollegeName }}</div>
+                    </td>
+                    <td>{{ ord.ShippingAddress }}</td>
+                    <td style="font-weight: 600; color: var(--primary);">₹{{ "%.2f"|format(ord.TotalAmount) }}</td>
+                    <td>{{ ord.OrderDate.split(' ')[0] }}</td>
+                    <td style="text-align: right;">
+                        <div style="display: inline-flex; gap: 0.5rem;">
+                            <!-- Approve order -->
+                            <form action="{{ url_for('admin.process_order', order_id=ord.OrderID, status='Approved') }}" method="POST">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-thumbs-up"></i>
+                                    <span>Approve Order</span>
+                                </button>
+                            </form>
+                            <!-- Cancel order -->
+                            <form action="{{ url_for('admin.process_order', order_id=ord.OrderID, status='Cancelled') }}" method="POST">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Cancel this bookstore order?')">
+                                    <i class="fas fa-ban"></i>
+                                    <span>Cancel</span>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                        <i class="fas fa-box-open" style="font-size: 2.5rem; color: var(--text-light); margin-bottom: 1rem; display: block;"></i>
+                        <span>No pending bookstore purchase orders.</span>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

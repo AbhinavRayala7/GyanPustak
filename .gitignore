@@ -1,0 +1,36 @@
+# Python environment
+venv/
+ENV/
+env/
+.venv/
+bin/
+lib/
+include/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Databases (SQLite)
+database/gyanpustak.db
+database/*.db-journal
+database/*.db-wal
+database/*.db-shm
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Application uploads
+static/uploads/*
+!static/uploads/.gitkeep

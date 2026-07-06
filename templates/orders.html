@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Order History - Gyan Pustak{% endblock %}
+{% block page_header %}Bookstore Purchases{% endblock %}
+
+{% block content %}
+<div class="table-container" style="margin-top: 1rem;">
+    <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 1.1rem; font-weight: 600;">Your Purchase Orders</h3>
+        <a href="{{ url_for('store.index') }}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-shopping-bag"></i>
+            <span>Browse Bookstore</span>
+        </a>
+    </div>
+    
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Order Date</th>
+                <th>Total Amount</th>
+                <th>Handoff Location</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th style="text-align: right;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>#{{ order.OrderID }}</td>
+                    <td>{{ order.OrderDate.split(' ')[0] }}</td>
+                    <td style="font-weight: 600;">₹{{ "%.2f"|format(order.TotalAmount) }}</td>
+                    <td>{{ order.ShippingAddress }}</td>
+                    <td>
+                        <span class="badge {% if order.PaymentStatus == 'Paid' %}approved{% elif order.PaymentStatus == 'Pending' %}pending{% else %}rejected{% endif %}">
+                            {{ order.PaymentStatus }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge {% if order.OrderStatus == 'Pending' %}pending{% elif order.OrderStatus in ['Approved', 'Shipped', 'Delivered'] %}approved{% else %}rejected{% endif %}">
+                            {{ order.OrderStatus }}
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        {% if order.OrderStatus == 'Pending' %}
+                            <form action="{{ url_for('store.cancel_order', order_id=order.OrderID) }}" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this order?')">
+                                    <i class="fas fa-times"></i>
+                                    <span>Cancel Order</span>
+                                </button>
+                            </form>
+                        {% else %}
+                            <span style="font-size: 0.85rem; color: var(--text-secondary);">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                        <i class="fas fa-history" style="font-size: 2.5rem; color: var(--text-light); margin-bottom: 1rem; display: block;"></i>
+                        <span>You haven't placed any bookstore orders yet.</span>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

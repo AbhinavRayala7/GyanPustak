@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Super Admin Dashboard - Gyan Pustak{% endblock %}
+{% block page_header %}System SuperAdmin Console{% endblock %}
+
+{% block content %}
+<!-- Quick Stat Summary Cards -->
+<div class="dashboard-grid">
+    <div class="stat-card">
+        <div class="icon-box"><i class="fas fa-users"></i></div>
+        <div class="info">
+            <span class="num">{{ total_users }}</span>
+            <span class="title">Total System Users</span>
+        </div>
+    </div>
+    
+    <div class="stat-card info">
+        <div class="icon-box"><i class="fas fa-user-shield"></i></div>
+        <div class="info">
+            <span class="num">{{ total_admins }}</span>
+            <span class="title">Administrators</span>
+        </div>
+    </div>
+    
+    <div class="stat-card success">
+        <div class="icon-box"><i class="fas fa-tags"></i></div>
+        <div class="info">
+            <span class="num">{{ total_listings }}</span>
+            <span class="title">Active Listings</span>
+        </div>
+    </div>
+    
+    <div class="stat-card warning">
+        <div class="icon-box"><i class="fas fa-shopping-cart"></i></div>
+        <div class="info">
+            <span class="num">{{ total_orders }}</span>
+            <span class="title">Orders Placed</span>
+        </div>
+    </div>
+</div>
+
+<!-- Super Admin Management Panel -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
+    <!-- Quick Controls -->
+    <div class="table-container" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; margin-bottom: 0;">
+        <h3 style="font-size: 1.1rem; font-weight: 600;">System Controls</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary);">Manage system operators, assign administrative roles, lock suspended accounts, or reset user access settings.</p>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="{{ url_for('admin.manage_users') }}" class="btn btn-primary" style="justify-content: center;">
+                <i class="fas fa-user-cog"></i>
+                <span>User Accounts Manager</span>
+            </a>
+            <a href="{{ url_for('admin.manage_books') }}" class="btn btn-secondary" style="justify-content: center;">
+                <i class="fas fa-plus"></i>
+                <span>Library Catalog Editor</span>
+            </a>
+            <a href="{{ url_for('reports.index') }}" class="btn btn-secondary" style="justify-content: center;">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Generate Financial Reports</span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- User breakdown chart -->
+    <div class="chart-card">
+        <h3>Books Distribution</h3>
+        <div style="position: relative; height: 180px; display: flex; justify-content: center;">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}

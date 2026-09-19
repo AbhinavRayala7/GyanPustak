@@ -85,4 +85,10 @@ Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your web browser.
 ---
 
 ## 🔑 Test Credentials (Seeded Users)
-you can find the login credentials in the seed.db files
+
+| Role | Username | Password | "Login As" Dropdown Selection |
+| :--- | :--- | :--- | :--- |
+| **Trial Student** | `user1` | `u1234` | **Student / User** |
+| **Student** | `abhinav` | `password123` | **Student / User** |
+| **Admin** | `admin` | `password123` | **Librarian Admin** |
+| **Super Admin** | `superadmin` | `password123` | **Super Admin** |

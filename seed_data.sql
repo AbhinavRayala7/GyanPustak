@@ -23,8 +23,8 @@ GO
 
 -- 2. Populate Users (Buyers & Sellers from different IIT campuses)
 INSERT INTO dbo.Users (Username, Email, PasswordHash, Phone, CollegeName, UserStatus) VALUES
-(N'abhinav_r', N'abhinavrayala7@gmail.com', 'bcrypt_hash_1', '8328631380', N'IIT Bhubaneswar', 'Active'),
-(N'prasanth_r', N'21ee01049@iitbbs.ac.in', 'bcrypt_hash_2', '7013233579', N'IIT Bhubaneswar', 'Active'),
+(N'abhinav_r', N'abhinavrayala7@gmail.com', 'bcrypt_hash_1', '8321456788', N'IIT Bhubaneswar', 'Active'),
+(N'prasanth_r', N'21ee01049@iitbbs.ac.in', 'bcrypt_hash_2', '7045678945', N'IIT Bhubaneswar', 'Active'),
 (N'rahul_s', N'rahuls@iith.ac.in', 'bcrypt_hash_3', '9876543210', N'IIT Hyderabad', 'Active'),
 (N'sneha_m', N'sneham@iith.ac.in', 'bcrypt_hash_4', '9123456789', N'IIT Hyderabad', 'Active'),
 (N'amit_k', N'amitk@iitkgp.ac.in', 'bcrypt_hash_5', '9988776655', N'IIT Kharagpur', 'Active'),

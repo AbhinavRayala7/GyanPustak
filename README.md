@@ -1,94 +1,124 @@
-# Gyan Pustak - Full-Stack Library Management System & Bookstore
+# 📚 Gyan Pustak - Library Management & Campus Bookstore
 
-Gyan Pustak is a production-quality, role-based full-stack web application designed for managing college campus library books, peer-to-peer textbook trading, and student support. 
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Framework-Flask_3.0-black.svg?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![Database](https://img.shields.io/badge/Database-SQLite%20%7C%20MSSQL-00599C.svg?logo=sqlite&logoColor=white)](https://sqlite.org/)
+[![Frontend](https://img.shields.io/badge/Frontend-HTML5%20%7C%20CSS3%20%7C%20JS-E34F26.svg?logo=html5&logoColor=white)](https://developer.mozilla.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Built using **Python (Flask)** for the backend, **HTML5/CSS3/Vanilla JS** for the frontend, and **Microsoft SQL Server / SQLite** for the database, this project is designed to be developer-friendly, zero-config on first launch, and optimized for campus trades.
+**Gyan Pustak** is a full-stack, role-based web application designed for college campuses. It combines traditional **library circulation management** with a **peer-to-peer textbook marketplace** and an **integrated support ticketing system**.
+
+Built with a zero-config setup, the system runs automatically out-of-the-box using local SQLite, while also supporting enterprise Microsoft SQL Server environments.
 
 ---
 
-##  Key Modules & Features
+## ✨ Key Features & Modules
 
-1.  **Multi-Role Access Control:**
-    *   **Student:** Register and search the catalog, request borrows/reserves, add textbooks to a cart, order books from peers, and log customer support tickets.
-    *   **Admin (Librarian):** Manage book catalogs (CRUD), authorize textbook borrow requests, process bookstore customer orders, and resolve customer support threads.
-    *   **Super Admin:** Edit user details, create Admin accounts, deactivate suspended accounts, and view global system analytics.
-2.  **Library Circulation Flow:** Request book borrows or place reservations if books are out-of-stock. Returns instantly update inventory.
-3.  **Online Bookstore Shopping Cart:** Browse textbooks listed by peers. Add items, update quantities in a session-backed cart, and place orders.
-4.  **Customer Support Ticketing:** Thread-based ticketing system styled like a chat window for students to report issues and admins to reply.
-5.  **Analytics & Dynamic Charting:** Displays books-by-category and borrowing trends using Chart.js.
-6.  **Exportable Reports:** Export active inventory list, borrowing records, and transaction logs directly to multi-sheet Microsoft Excel spreadsheets. Supports native browser Print-to-PDF reports.
+### 🎓 1. Student Portal
+* **Library Catalog:** Real-time search across titles, authors, and categories. Borrow books or reserve out-of-stock titles.
+* **Peer-to-Peer Bookstore:** Browse used textbooks listed by fellow students with condition tags (*Like New*, *Good*, *Acceptable*).
+* **Shopping Cart & Orders:** Session-backed cart, checkout flow, and live order tracking.
+* **Support Center:** Raise ticket threads to communicate directly with librarians.
+
+### 🛡️ 2. Admin (Librarian) Portal
+* **Circulation Control:** Review and approve/reject book borrow and reservation requests.
+* **Inventory Management:** Full CRUD operations to add, update, and manage book stock.
+* **Order Processing:** Update order fulfillment statuses (*Pending*, *Shipped*, *Delivered*).
+* **Ticketing Desk:** Real-time message thread interface to respond to student support queries.
+
+### 👑 3. Super Admin & Analytics
+* **Interactive Dashboards:** Visualized borrowing trends and popular categories powered by Chart.js.
+* **User Control:** Manage user statuses (Active/Suspended) and assign administrative privileges.
+* **Excel Data Exports:** Export inventory records, borrow logs, and transactions into multi-sheet `.xlsx` workbooks via `openpyxl`.
 
 ---
 
 ## 🛠️ Tech Stack
 
-*   **Backend:** Python 3.x, Flask
-*   **Database:** Microsoft SQL Server (Primary, via `pyodbc`) with auto-fallback to SQLite3 (Local file-based)
-*   **Frontend:** HTML5, Vanilla CSS3 (custom responsive stylesheet with CSS variables for Light/Dark Mode), Vanilla JS
-*   **Analytics:** Chart.js (via JSON endpoints)
-*   **Reports:** `openpyxl` (dynamic Excel generation)
+| Layer | Technology |
+| :--- | :--- |
+| **Backend** | Python 3.9+, Flask 3.0.3, Jinja2 Templates |
+| **Database** | SQLite3 (Auto-initialized local storage) / Microsoft SQL Server (via `pyodbc`) |
+| **Frontend** | Responsive Vanilla CSS3 (Custom design system with Dark/Light theme), Vanilla JavaScript |
+| **Data Analytics** | Chart.js (REST endpoints) |
+| **Reporting** | `openpyxl` (Dynamic multi-sheet Excel report generator) |
 
 ---
 
-##  Repository Structure
+## 📁 Repository Structure
 
 ```bash
-D:\GyanPustak/
-├── app.py                # Main entry point: Flask app initialization
-├── config.py             # App configuration (secret key, DB connection string)
-├── requirements.txt      # Python dependencies (Flask, pyodbc, openpyxl)
+GyanPustak/
+├── app.py                # Main Flask application entry point
+├── config.py             # App configuration (secret keys, DB paths)
+├── requirements.txt      # Python dependencies
 ├── database/
-│   ├── connection.py     # Database connection manager (SQL Server / SQLite fallback)
-│   ├── schema.sql        # Table structures (CREATE TABLE)
-│   └── seed_data.sql     # Seed user accounts, books, and listings
+│   ├── connection.py     # Resilient DB connection manager (MSSQL / SQLite fallback)
+│   ├── schema.sql        # Database table DDL definitions
+│   └── seed_data.sql     # Initial seed users, books, and marketplace listings
 ├── routes/
-│   ├── auth.py           # Login, registration, password hashing
-│   ├── dashboard.py      # Dashboards for Student, Admin, and Super Admin
-│   ├── library.py        # Catalog search, borrow requests, reservations
-│   ├── store.py          # Bookstore, cart, order placement
-│   ├── tickets.py        # Support ticket conversation threads
-│   ├── admin.py          # Book CRUD, order status, ticket replies, user control
-│   └── reports.py        # Excel report exports
+│   ├── auth.py           # Authentication, role verification, registration
+│   ├── dashboard.py      # Role-based dashboards (Student, Admin, Super Admin)
+│   ├── library.py        # Library search, borrow, and reservation handlers
+│   ├── store.py          # Bookstore, cart session, order checkout
+│   ├── tickets.py        # Support ticketing threads
+│   ├── admin.py          # Book management, order status, ticket moderation
+│   └── reports.py        # Dynamic Excel report generation
 ├── static/
-│   ├── css/
-│   │   └── style.css     # Responsive custom stylesheet (variables, layouts)
-│   └── js/
-│       └── main.js       # Dark mode, modal overlay controls, Chart.js loaders
-└── templates/            # HTML structure files
+│   ├── css/style.css     # Responsive design system & themes
+│   └── js/main.js        # UI modals, theme toggler, Chart.js integrations
+└── templates/            # Jinja2 HTML templates
 ```
 
 ---
 
-## 🚀 Local Installation & Setup
+## 🚀 Quick Start & Installation
 
-Gyan Pustak features an **automatic SQLite database initialization**. If it cannot connect to a Microsoft SQL Server, it will silently create `database/gyanpustak.db`, run DDL schemas, and inject test users automatically. **You can launch the project out-of-the-box in 3 steps!**
+Gyan Pustak features **automatic database initialization**. On first launch, if Microsoft SQL Server is not detected, it automatically creates `database/gyanpustak.db`, executes the schema, and populates seed data.
 
-### Step 1: Install Dependencies
-Open your terminal (Command Prompt, PowerShell, or Bash) and run:
+### 1. Clone the Repository
+```bash
+git clone https://github.com/AbhinavRayala7/GyanPustak.git
+cd GyanPustak
+```
+
+### 2. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### Step 2: Configure Database (Optional)
-If you want to use **Microsoft SQL Server**:
-1. Connect to your instance and create a database named `GyanPustak`.
-2. Open `config.py` and verify `SQL_SERVER_CONN` is correct for your local instance (e.g. check your server name and verify SQL Server ODBC Driver version).
-3. If SQL Server is down or drivers are missing, the system automatically uses SQLite.
-
-### Step 3: Run the Application
-Start the local server:
+### 3. Run the Application
 ```bash
 python app.py
 ```
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your web browser.
+Open **[http://127.0.0.1:5000](http://127.0.0.1:5000)** in your web browser.
 
 ---
 
-## 🔑 Test Credentials (Seeded Users)
+## 🔑 Demo Test Accounts
 
-| Role | Username | Password | "Login As" Dropdown Selection |
-| :--- | :--- | :--- | :--- |
-| **Trial Student** | `user1` | `u1234` | **Student / User** |
-| **Student** | `abhinav` | `password123` | **Student / User** |
-| **Admin** | `admin` | `password123` | **Librarian Admin** |
-| **Super Admin** | `superadmin` | `password123` | **Super Admin** |
+The database comes pre-seeded with test accounts for each role so anyone testing the project can log in immediately.
+
+> **Password for all demo accounts:** `password123`
+
+| Role | Username / Email | Password | "Login As" Role Selection | Capabilities to Test |
+| :--- | :--- | :--- | :--- | :--- |
+| **Student** | `abhinav` or `abhinav@gyanpustak.in` | `password123` | **Student / User** | Borrow books, buy used textbooks, cart & checkout, open support tickets |
+| **Student (Alt)** | `student_rahul` | `password123` | **Student / User** | Alternative student profile |
+| **Admin (Librarian)** | `admin` or `admin@gyanpustak.in` | `password123` | **Librarian Admin** | Approve book borrow requests, add/edit books, answer support tickets |
+| **Super Admin** | `superadmin` or `superadmin@gyanpustak.in` | `password123` | **Super Admin** | View analytics graphs, manage users, export Excel reports |
+
+*(You can also register a brand-new student account directly from the **Register** page!)*
+
+---
+
+## 💾 Database Architecture
+
+* **Zero-Config Fallback (Default):** Runs immediately using standard Python `sqlite3`. Requires no external database installations or drivers.
+* **Microsoft SQL Server (Optional):** To use SQL Server in production or lab environments, set up a database named `GyanPustak` and configure connection details in `config.py`.
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
